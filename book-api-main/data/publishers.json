@@ -1,0 +1,22 @@
+[
+  {
+    "id": "46a249b9-30af-4b4b-9d93-4c3eb861cacd",
+    "name": "PENGUIN RANDOM",
+    "location": "CHILE"
+  },
+  {
+    "id": "e5fc5abd-7927-464a-be79-274d8f4715e2",
+    "name": "EDITORIAL INDEPENDIENTE",
+    "location": "CHILE"
+  },
+  {
+    "id": "ddf0fa6c-fbec-4c66-8ef0-136af019a420",
+    "name": "EDITORIAL PEPITA",
+    "location": "CUBANA"
+  },
+  {
+    "id": "ec06ef5a-12e7-4fd1-b4be-2e57c5813c7d",
+    "name": "SUDAMERICANA",
+    "location": "ARGENTINA"
+  }
+]
