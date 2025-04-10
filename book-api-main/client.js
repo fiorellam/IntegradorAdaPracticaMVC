@@ -6,6 +6,7 @@ const { keyInYN } = require('readline-sync');
 //conectamos con el host correspondiente
 const HOST = 'localhost';
 const PORT = 8080;
+let inInteractiveMode = false;
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -19,7 +20,8 @@ const client = net.createConnection({ host: HOST, port: PORT }, () => {
 
 //Muestra por pantalla las respuestas del server a las interacciones
 client.on('data', (data) => {
-    console.log('\nServer Answer: ', data.toString().trim());
+    if (inInteractiveMode) return; // No hacer nada si estamos en modo interactivo
+    console.log('\n📨 Server Answer:\n', data.toString().trim());
     yesNoPromt();
 });
 
@@ -35,11 +37,51 @@ client.on('end', () => {
 
 //función en caso de querer agregar un libro, solicita más información paso a paso.
 function addBookPrompt(){
-    rl.question("Please insert the book title: ", (bookTitle) => {
-        
-        rl.question("Please insert the author: ", (bookAuthor) => {
-            const addBookInput = `ADD BOOK + ${bookTitle} + ${bookAuthor}` 
-            client.write(addBookInput)
+    inInteractiveMode = true;
+    //Primero obtenemos la lista de autores
+    client.write("GET AUTHORS");
+    
+    client.once("data", (authorsData) => {
+        const authors = JSON.parse(authorsData.toString().replace("Authors:", "").trim());
+        if (authors.length === 0) {
+            console.log("⚠️ There are not available authors. You must add one first");
+            promptUser();
+            return;
+        }
+        console.log("\n👥 Available authors:");
+        authors.forEach((author, index) => console.log(`${index + 1}. ${author.name}`));
+
+        rl.question("Select author number: ", (authorIndex) => {
+            const selectedAuthor = authors[authorIndex - 1];
+            if (!selectedAuthor) {
+                console.log("❌ Invalid selection");
+                return promptUser();
+            }
+
+            //Now get publisher
+            client.write("GET PUBLISHERS");
+            client.once("data", (publishersData) => {
+                const publishers = JSON.parse(publishersData.toString().replace("Publishers:", "").trim()); if (publishers.length === 0) {
+                    console.log("⚠️ No publishers available. Please add one first.");
+                    return promptUser();
+                }
+
+                console.log("\n🏛️ Available Publishers:");
+                publishers.forEach((p, i) => console.log(`${i + 1}. ${p.name}`));
+
+                rl.question("Select publisher number: ", (publisherIndex) => {
+                    const selectedPublisher = publishers[publisherIndex - 1];
+                    if (!selectedPublisher) {
+                        console.log("❌ Invalid selection.");
+                        return promptUser();
+                    }
+
+                    rl.question("Enter book title: ", (bookTitle) => {
+                        const command = `ADD BOOK + ${bookTitle} + ${selectedAuthor.id} + ${selectedPublisher.id}`;
+                        client.write(command);
+                    });
+                });
+            });
         });
     });
 }

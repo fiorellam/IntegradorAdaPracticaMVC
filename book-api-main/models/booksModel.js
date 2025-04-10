@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const {readAuthors, addAuthor} = require('./authorsModel');
 const { v4 : uuidv4 } = require('uuid');
+const { readPublishers } = require('./publishersModel');
+const { log } = require('console');
 
 // Definimos la ruta para buscar los datos de libros en el documento JSON
 const booksPath = path.join(__dirname, '../data/books.json');
@@ -25,18 +27,25 @@ const readBooks = () => {
 // Generamos la función que nos permita ir agregando libros, ingresando los valores título y autor
 // El id se generará por la utilización del método UUID. Se asignará como valor del autor el UUID correspondiente al autor ingresado. De no existir, se previene la posibilidad de ingresar al nuevo autor
 // Se tuvo en cuenta el manejo de errores para el caso que no se haya podido guardar el nuevo libro ingresado  
-const addBook = ({newTitle, newBookAuthor}) => {
+const addBook = ({newTitle, authorId, publisherId}) => {
     try {
         const books = readBooks(); 
         const authors = readAuthors();
+        const publishers = readPublishers();
     
         const author = authors.find(author =>
-            author.name.toLowerCase().trim() === newBookAuthor.toLowerCase().trim());
+            author.id === authorId);
         
         if(!author){
             throw new Error("⚠️  Author profile doesn't exist. Register a new author before adding a new book");
         }
-        const newBook = { id: uuidv4(), title: newTitle, author: author.id};
+        const publisher = publishers.find(publisher =>
+            publisher.id === publisherId);
+        
+        if(!publisher){
+            throw new Error("⚠️  Publisher profile doesn't exist. Register a new publisher before adding a new book");
+        }
+        const newBook = { id: uuidv4(), title: newTitle, author: author.id, publisher: publisher.id};
         books.push(newBook);
         fs.writeFileSync(booksPath, JSON.stringify(books, null, 2));
         return newBook
