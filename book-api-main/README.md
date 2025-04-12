@@ -35,8 +35,9 @@ Recordá ejecutar primero el server y luego el cliente para no tener errores en 
 **ADD BOOK**: Permite añadir un libro a la lista, se solicitará que se ingrese el título y el nombre del autor del libro una vez ejecutado el comando.
 
 - 1. ```ADD BOOK ``` (Sólo se escribe este comando primero)
-- 2. Después se nos solicitará que se ingrese el título del libro ```La ladrona ```
-- 3. Ingresamos el nombre del autor exactamente como viene en el catálogo de autores ```Mariana Enriquez ```
+- 2. Aparecerá la lista de autores disponibles, se debe elegir el autor del libro. En caso de que no esté el autor en la lista, se debe agregar primero un autor nuevo
+- 3. Aparecerá la lista de editoriales disponibles, se debe elegir la editorial del libro. En caso de que no esté la editorial en la lista, se debe agregar primero una editorial nueva
+- 4. Finalmente se escribe el nombre del libro
 
 **ADD AUTHOR**: Permite añadir un autor ingresando los datos dentro del mismo comando.  
 - El formato a utilizar es "ADD AUTHOR nombre nacionalidad" 
